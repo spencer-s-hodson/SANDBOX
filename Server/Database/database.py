@@ -1,10 +1,15 @@
 import mysql.connector
 from mysql.connector import Error
+from geo import AddressComparator
 
 class MySQLDatabase:
     def __init__(self, host, database, user, password, table_name):
+        """
+        this is my python
+        """
         self.connection = None
         self.table_name = table_name
+        self.address_compare = AddressComparator()
         try:
             self.connection = mysql.connector.connect(
                 host=host,
@@ -28,6 +33,26 @@ class MySQLDatabase:
             print("Data inserted successfully")
         except Error as e:
             print(f"Error: {e}")
+    
+    def query_data_sorted(self, dest_address: str, addr_column: int, columns=None):
+        data = self.query_data(columns)
+        data_by_addr = {}  
+        data_by_dist = {}
+        dist_list = []
+        out = []
+        for tup in data:
+            data_by_addr[tup[addr_column]] = tup
+        
+        for addr in data_by_addr.keys():
+            dist = self.address_compare.calculate_distance(dest_address, addr)
+            data_by_dist[dist] = data_by_addr[addr]
+        
+        dist_list = sorted(data_by_dist.keys())
+        
+        for dist in dist_list:
+            out.append(data_by_dist[dist])
+
+        return out
 
     def query_data(self, columns=None):
         column_str = ', '.join(columns) if columns else '*'
