@@ -1,22 +1,59 @@
 document.addEventListener('DOMContentLoaded', function (event) {
     document.getElementById('myForm').addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent the default form submission
+        e.preventDefault();
 
-        const address = document.getElementById('enter-address').value;
-        const url = new URL('http://localhost:5000/get-rows');
-        url.searchParams.append('address', address);
-
-        fetch(url, {
-            method: 'GET'
+        fetch('http://localhost:5000/get-rows')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
         })
-        .then(response => response.json())
         .then(data => {
-            console.log('Success:', data);
-            // Handle success here (e.g., display a success message)
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const card = createCard(item);
+                container.appendChild(card);
+            });
         })
-        .catch((error) => {
-            console.error('Error:', error);
-            // Handle errors here (e.g., display an error message)
+        .catch(error => {
+            console.error('Fetch error:', error);
         });
     });
 });
+
+function createCard(item) {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    // Access tuple elements by their index
+    const firstName = document.createElement('h3');
+    firstName.textContent = item[0];
+
+    const lastName = document.createElement('h4');
+    lastName.textContent = item[1];
+
+    const address = document.createElement('p');
+    address.textContent = item[2];
+
+    const price = document.createElement('p');
+    price.textContent = 'Price: $' + item[3];
+
+    const parkingType = document.createElement('p');
+    parkingType.textContent = 'Type: ' + item[4];
+
+    const contact = document.createElement('p');
+    contact.textContent = 'Contact: ' + item[5];
+
+    // Append elements to card
+    card.appendChild(firstName);
+    card.appendChild(lastName);
+    card.appendChild(address);
+    card.appendChild(price);
+    card.appendChild(parkingType);
+    card.appendChild(contact);
+
+    return card;
+}

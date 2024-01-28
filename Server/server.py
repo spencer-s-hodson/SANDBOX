@@ -1,7 +1,7 @@
 # Flask stuff
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from Database.database import MySQLDatabase
+from database import MySQLDatabase
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for any route
@@ -13,8 +13,14 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for any rout
 def get_rows():
     address = request.args.get('address')
 
+    # DUMMY DATA
+    l: list = [
+        ('john', 'brown', '892 e 700 n provo ut 84604', '800', 'covered', '949-709-9241'),
+        ('mike', 'white', '1515 N 300 W st provo ut 84604', '800', 'uncovered', '949-632-6104'),
+    ]
+
     # Placeholder response for testing
-    return jsonify({"message": "Received address: " + str(address)})
+    return jsonify(l)
     
     # rows = db.query_data()
     # return jsonify(rows)
